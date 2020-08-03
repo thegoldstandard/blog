@@ -4,26 +4,51 @@ title:  "Welcome to Jekyll!"
 date:   2020-08-01 13:32:23 -0500
 categories: jekyll update
 ---
-You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
 
-Jekyll requires blog post files to be named according to the following format:
+> This post is a summary of Prof Naftali Tishby's recent talk on "Information Theory in Deep Learning". It presented how to apply the information theory to study the growth and transformation of deep neural networks during training.
 
-`YEAR-MONTH-DAY-title.MARKUP`
+<!--more-->
 
-Where `YEAR` is a four-digit number, `MONTH` and `DAY` are both two-digit numbers, and `MARKUP` is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.
+Recently I watched the talk ["Information Theory in Deep Learning"](https://youtu.be/bLqJHjXihK8) by Prof Naftali Tishby and found it very interesting. He presented how to apply the information theory to study the growth and transformation of deep neural networks during training. Using the [Information Bottleneck (IB)](https://arxiv.org/pdf/physics/0004057.pdf) method, he proposed a new learning bound for deep neural networks (DNN), as the traditional learning theory fails due to the exponentially large number of parameters. Another keen observation is that DNN training involves two distinct phases: First, the network is trained to fully represent the input data and minimize the generalization error; then, it learns to forget the irrelevant details by compressing the representation of the input.
 
-Jekyll also offers powerful support for code snippets:
+Most of the materials in this post are from Prof Tishby’s talk and [related papers]({{ site.baseurl }}{% post_url 2017-09-28-anatomize-deep-learning-with-information-theory %}#references).
 
-{% highlight ruby %}
-def print_hi(name)
-  puts "Hi, #{name}"
-end
-print_hi('Tom')
-#=> prints 'Hi, Tom' to STDOUT.
-{% endhighlight %}
+{: class="table-of-content"}
+* TOC
+{:toc}
 
-Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
+## Basic Concepts
 
-[jekyll-docs]: https://jekyllrb.com/docs/home
-[jekyll-gh]:   https://github.com/jekyll/jekyll
-[jekyll-talk]: https://talk.jekyllrb.com/
+[Markov Chain](https://en.wikipedia.org/wiki/Markov_chain)
+
+A Markov process is a ["memoryless"](http://mathworld.wolfram.com/Memoryless.html) (also called "Markov Property") stochastic process. A Markov chain is a type of Markov process containing multiple discrete states. That is being said, the conditional probability of future states of the process is only determined by the current state and does not depend on the past states.
+
+
+[Kullback–Leibler (KL) Divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence)
+
+KL divergence measures how one probability distribution $$p$$ diverges from a second expected probability distribution $$q$$. It is asymmetric.
+
+$$
+\begin{aligned}
+D_{KL}(p \| q) &= \sum_x p(x) \log \frac{p(x)}{q(x)} \\
+ &= - \sum_x p(x)\log q(x) + \sum_x p(x)\log p(x) \\
+ &= H(P, Q) - H(P)
+\end{aligned}
+$$
+
+$$D_{KL}$$ achieves the minimum zero when $$p(x)$$ == $$q(x)$$ everywhere.
+
+
+[Mutual Information](https://en.wikipedia.org/wiki/Mutual_information)
+
+Mutual information measures the mutual dependence between two variables. It quantifies the "amount of information" obtained about one random variable through the other random variable. Mutual information is symmetric.
+
+$$
+\begin{aligned}
+I(X;Y) &= D_{KL}[p(x,y) \| p(x)p(y)] \\
+ &= \sum_{x \in X, y \in Y} p(x, y) \log(\frac{p(x, y)}{p(x)p(y)}) \\
+ &= \sum_{x \in X, y \in Y} p(x, y) \log(\frac{p(x|y)}{p(x)}) \\ 
+ &= H(X) - H(X|Y) \\
+\end{aligned}
+$$
+
