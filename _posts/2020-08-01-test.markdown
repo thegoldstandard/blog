@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
+title:  "Equation Render Test"
 date:   2020-08-01 13:32:23 -0500
 categories: jekyll update
 ---
